@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shraddha Computer Institute</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050d1a;
+      --surface: #0a1628;
+      --surface2: #0f2040;
+      --cyan: #00e5ff;
+      --cyan2: #00b4d8;
+      --gold: #ffd166;
+      --green: #06d6a0;
+      --red: #ef476f;
+      --text: #e8f4f8;
+      --muted: #6b8ca4;
+      --border: rgba(0,229,255,0.15);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom Cursor ── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--cyan);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.08s ease, width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--cyan);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.18s ease, border-color 0.2s;
+      opacity: 0.5;
+    }
+
+    /* ── Canvas BG ── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.2rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(20px);
+      background: rgba(5,13,26,0.7);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.3rem;
+      color: var(--cyan);
+      display: flex; align-items: center; gap: 0.6rem;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-logo .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: #000;
+    }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.88rem; font-weight: 500; letter-spacing: 0.04em;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--cyan);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--cyan); color: #000;
+      border: none; border-radius: 8px;
+      padding: 0.55rem 1.3rem;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.85rem; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,229,255,0.35);
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 5% 4rem;
+      position: relative; z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.78rem; color: var(--cyan);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: fadeDown 0.7s ease both;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%; background: var(--green);
+      animation: pulse 1.8s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(6,214,160,0.6); }
+      50% { box-shadow: 0 0 0 6px rgba(6,214,160,0); }
+    }
+    .hero-headline {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .hero-headline .line2 { color: var(--cyan); display: block; }
+    .hero-headline .line3 {
+      color: var(--gold);
+      display: block;
+      font-size: 0.55em;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .hero-sub {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.08rem; line-height: 1.7;
+      margin-bottom: 2.8rem;
+      animation: fadeUp 0.8s 0.35s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      color: #000; border: none; border-radius: 10px;
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.95rem; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,229,255,0.4);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: 0.95rem; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-outline:hover {
+      border-color: var(--cyan); color: var(--cyan);
+      transform: translateY(-3px);
+    }
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.8s 0.65s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 2.2rem;
+      color: var(--cyan);
+      display: block;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.04em; }
+
+    /* scroll cue */
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em;
+      animation: fadeIn 1s 1s both;
+    }
+    .scroll-arrow {
+      width: 22px; height: 22px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg);
+      animation: bounce 1.4s ease infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: rotate(45deg) translateY(0); }
+      50% { transform: rotate(45deg) translateY(6px); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 5%; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--cyan);
+      background: rgba(0,229,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: 100px; padding: 0.3rem 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 1.1; margin-bottom: 1rem;
+    }
+    .section-title em { color: var(--cyan); font-style: normal; }
+    .section-desc { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 520px; }
+
+    /* reveal on scroll */
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── COURSES ── */
+    #courses { background: transparent; }
+    .courses-header { margin-bottom: 3.5rem; }
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .course-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .course-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--accent, var(--cyan));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .course-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,229,255,0.3);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.4);
+    }
+    .course-card:hover::before { transform: scaleX(1); }
+    .course-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: rgba(0,229,255,0.1);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+      transition: transform 0.3s;
+    }
+    .course-card:hover .course-icon { transform: scale(1.12) rotate(-4deg); }
+    .course-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+    .course-full {
+      font-size: 0.78rem; color: var(--cyan);
+      letter-spacing: 0.04em; margin-bottom: 0.8rem;
+    }
+    .course-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+    .course-badge {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      font-size: 0.67rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.25rem 0.65rem; border-radius: 100px;
+      background: rgba(255,209,102,0.12);
+      color: var(--gold); border: 1px solid rgba(255,209,102,0.2);
+    }
+
+    /* ── WHY CHOOSE US ── */
+    #why {
+      background: linear-gradient(180deg, transparent, rgba(0,229,255,0.03), transparent);
+    }
+    .why-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+    }
+    .features-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,229,255,0.3);
+    }
+    .feature-icon { font-size: 1.6rem; margin-bottom: 0.7rem; }
+    .feature-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+    .feature-text { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── TYPING TICKER ── */
+    .ticker-wrap {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden; padding: 0.9rem 0;
+      position: relative;
+    }
+    .ticker-inner {
+      display: flex; gap: 3rem;
+      white-space: nowrap;
+      animation: ticker 22s linear infinite;
+    }
+    .ticker-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.82rem; color: var(--muted);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .ticker-dot { color: var(--cyan); font-size: 1rem; }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials {}
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.4rem; margin-top: 3rem;
+    }
+    .tcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      position: relative;
+    }
+    .tcard-quote {
+      font-size: 2.5rem; line-height: 1;
+      color: var(--cyan); opacity: 0.3;
+      font-family: Georgia, serif; margin-bottom: 0.5rem;
+    }
+    .tcard-text {
+      font-size: 0.9rem; line-height: 1.7;
+      color: var(--text); margin-bottom: 1.2rem;
+    }
+    .tcard-author { display: flex; align-items: center; gap: 0.8rem; }
+    .tcard-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem; color: #000;
+    }
+    .tcard-name {
+      font-weight: 600; font-size: 0.87rem;
+    }
+    .tcard-role { font-size: 0.75rem; color: var(--muted); }
+    .stars { color: var(--gold); font-size: 0.8rem; margin-bottom: 0.6rem; }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(255,209,102,0.03));
+    }
+    .contact-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+    .contact-cards { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem; }
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.4rem 1.6rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: border-color 0.3s, transform 0.3s;
+      text-decoration: none; color: inherit;
+    }
+    .contact-card:hover {
+      border-color: var(--cyan); transform: translateX(6px);
+    }
+    .contact-card-icon {
+      width: 46px; height: 46px; border-radius: 10px;
+      background: rgba(0,229,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .contact-card-label { font-size: 0.73rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem; }
+    .contact-card-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--cyan); }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.05em; }
+    .form-group input, .form-group textarea, .form-group select {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--cyan);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group select option { background: var(--surface2); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 5% 2rem;
+      position: relative; z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-brand {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.2rem; color: var(--cyan);
+    }
+    .footer-tagline { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--cyan); }
+    .footer-bottom {
+      max-width: 1100px; margin: 2rem auto 0;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      text-align: center; color: var(--muted); font-size: 0.78rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .why-layout, .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-stats { gap: 2rem; }
+    }
+    @media (max-width: 480px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── FLOATING ELEMENTS ── */
+    .float-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      animation: floatBlob 8s ease-in-out infinite;
+    }
+    @keyframes floatBlob {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(30px,-20px) scale(1.05); }
+      66% { transform: translate(-20px,15px) scale(0.97); }
+    }
+
+    /* number counter */
+    .counter { transition: all 0.1s; }
+
+    /* ── Floating WhatsApp Button ── */
+    .whatsapp-float {
+      position: fixed; bottom: 2rem; right: 2rem;
+      z-index: 999;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0.7rem;
+    }
+    .whatsapp-tooltip {
+      background: #fff; color: #111;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 500;
+      padding: 0.45rem 0.9rem; border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      white-space: nowrap; opacity: 0; transform: translateX(10px);
+      transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    }
+    .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; transform: translateX(0); }
+    .whatsapp-btn {
+      width: 58px; height: 58px; border-radius: 50%; background: #25d366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(37,211,102,0.45);
+      text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+      animation: waPop 2.5s ease infinite;
+    }
+    .whatsapp-btn:hover { transform: scale(1.12); box-shadow: 0 10px 32px rgba(37,211,102,0.6); }
+    .whatsapp-btn svg { width: 30px; height: 30px; }
+    @keyframes waPop {
+      0%,100% { box-shadow: 0 6px 24px rgba(37,211,102,0.45); }
+      50% { box-shadow: 0 6px 32px rgba(37,211,102,0.75), 0 0 0 10px rgba(37,211,102,0.08); }
+    }
+
+    /* ── Map Section ── */
+    .map-wrapper {
+      margin-top: 2.5rem; border-radius: 18px; overflow: hidden;
+      border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .map-wrapper iframe { width: 100%; height: 380px; display: block; border: none; }
+    .map-address {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 1.2rem 1.6rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .map-address-icon { font-size: 1.4rem; }
+    .map-address-text { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+    .map-address-text strong { color: var(--text); display: block; font-size: 0.95rem; }
+    .map-directions {
+      margin-left: auto; background: var(--cyan); color: #000;
+      border-radius: 8px; padding: 0.5rem 1.1rem;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem;
+      text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;
+    }
+    .map-directions:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,229,255,0.35); }
+  </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="logo-icon">💻</div>
+    Shraddha <span>&nbsp;Institute</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#location">Location</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Enroll Now →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <!-- Floating blobs -->
+  <div class="float-blob" style="width:500px;height:500px;background:rgba(0,229,255,0.06);top:10%;left:-10%;animation-delay:0s;"></div>
+  <div class="float-blob" style="width:400px;height:400px;background:rgba(255,209,102,0.05);top:30%;right:-8%;animation-delay:3s;"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Admissions Open 2025–26
+  </div>
+
+  <h1 class="hero-headline">
+    Build Your Digital Future
+    <em class="line2">Shraddha Computer</em>
+    <em class="line3">Institute — Excellence in IT Education</em>
+  </h1>
+
+  <p class="hero-sub">
+    Empowering students with industry-relevant computer skills. From basics to advanced certifications — your journey to a tech career starts here.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#courses" class="btn-primary">🎓 Explore Courses</a>
+    <a href="#contact" class="btn-outline">📞 Contact Us</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num counter" data-target="1200">0</span>
+      <span class="stat-label">Students Trained</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num counter" data-target="8">0</span>
+      <span class="stat-label">Courses Offered</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num counter" data-target="98">0</span>
+      <span class="stat-label">% Satisfaction</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num counter" data-target="5">0</span>
+      <span class="stat-label">Years of Excellence</span>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    SCROLL
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item"><span class="ticker-dot">✦</span> DOAP – Diploma in Office Automation</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> ADCA – Advanced Diploma in Computer Applications</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> English & Hindi Typing</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> OSINT – Open Source Intelligence</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Free Internet Access</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Expert Faculty</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Government-Recognized Certificates</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> DOAP – Diploma in Office Automation</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> ADCA – Advanced Diploma in Computer Applications</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> English & Hindi Typing</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> OSINT – Open Source Intelligence</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Free Internet Access</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Expert Faculty</span>
+    <span class="ticker-item"><span class="ticker-dot">✦</span> Government-Recognized Certificates</span>
+  </div>
+</div>
+
+<!-- COURSES -->
+<section id="courses">
+  <div class="section-inner">
+    <div class="courses-header reveal">
+      <span class="section-tag">Our Programs</span>
+      <h2 class="section-title">Courses That <em>Shape Careers</em></h2>
+      <p class="section-desc">Hands-on, certified programs designed for real-world success. Every course comes with practical training and job-ready skills.</p>
+    </div>
+    <div class="courses-grid">
+
+      <div class="course-card reveal" style="--accent:#00e5ff;transition-delay:0.05s">
+        <div class="course-icon">🖥️</div>
+        <span class="course-badge">Popular</span>
+        <div class="course-name">DOAP</div>
+        <div class="course-full">Diploma in Office Automation & Publishing</div>
+        <p class="course-desc">Master MS Office, DTP tools, desktop publishing, and office management software. Perfect for administrative and office roles.</p>
+      </div>
+
+      <div class="course-card reveal" style="--accent:#ffd166;transition-delay:0.1s">
+        <div class="course-icon">🎓</div>
+        <span class="course-badge">Best Value</span>
+        <div class="course-name">ADCA</div>
+        <div class="course-full">Advanced Diploma in Computer Applications</div>
+        <p class="course-desc">Comprehensive IT training covering programming basics, databases, tally, internet applications, and more over 12 months.</p>
+      </div>
+
+      <div class="course-card reveal" style="--accent:#06d6a0;transition-delay:0.15s">
+        <div class="course-icon">⌨️</div>
+        <div class="course-name">Typing</div>
+        <div class="course-full">English & Hindi Typing Courses</div>
+        <p class="course-desc">Build typing speed and accuracy in both English and Hindi. Essential for government jobs, data entry, and office work.</p>
+      </div>
+
+      <div class="course-card reveal" style="--accent:#ef476f;transition-delay:0.2s">
+        <div class="course-icon">🔍</div>
+        <span class="course-badge">New</span>
+        <div class="course-name">OSINT</div>
+        <div class="course-full">Open Source Intelligence & Research</div>
+        <p class="course-desc">Learn ethical digital investigation techniques, information gathering tools, and cybersecurity awareness for modern professionals.</p>
+      </div>
+
+      <div class="course-card reveal" style="--accent:#7b2fff;transition-delay:0.25s">
+        <div class="course-icon">📐</div>
+        <div class="course-name">Basics</div>
+        <div class="course-full">Computer Fundamentals & Internet</div>
+        <p class="course-desc">Starting from scratch? Learn hardware, software, Windows OS, internet browsing, email, and digital literacy fundamentals.</p>
+      </div>
+
+      <div class="course-card reveal" style="--accent:#ff9f1c;transition-delay:0.3s">
+        <div class="course-icon">📊</div>
+        <div class="course-name">Tally & Accounts</div>
+        <div class="course-full">Tally ERP & Basic Accounting</div>
+        <p class="course-desc">Master Tally ERP 9/Prime for GST billing, inventory, and accounts. The go-to skill for finance and commerce students.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section id="why">
+  <div class="section-inner">
+    <div class="why-layout">
+      <div class="reveal">
+        <span class="section-tag">Why Choose Us</span>
+        <h2 class="section-title">We Go Beyond <em>Just Teaching</em></h2>
+        <p class="section-desc">Shraddha Computer Institute is committed to delivering not just knowledge, but a complete learning experience that prepares you for tomorrow.</p>
+        <br/><br/>
+        <a href="#contact" class="btn-primary">Get Started Today →</a>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card reveal" style="transition-delay:0.05s">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-name">Free Internet</div>
+          <p class="feature-text">High-speed internet access at no extra cost, so you can learn and practice without limits.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.1s">
+          <div class="feature-icon">🏛️</div>
+          <div class="feature-name">Great Infrastructure</div>
+          <p class="feature-text">Modern computer labs, air-conditioned classrooms, and comfortable learning environment.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.15s">
+          <div class="feature-icon">👩‍🏫</div>
+          <div class="feature-name">Expert Faculty</div>
+          <p class="feature-text">Experienced, certified instructors who mentor you individually and help you grow faster.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.2s">
+          <div class="feature-icon">📜</div>
+          <div class="feature-name">Valid Certificates</div>
+          <p class="feature-text">Government-recognized and industry-accepted certifications that boost your resume.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.25s">
+          <div class="feature-icon">💰</div>
+          <div class="feature-name">Affordable Fees</div>
+          <p class="feature-text">Quality education shouldn't be expensive. We offer flexible EMI and scholarship options.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.3s">
+          <div class="feature-icon">🕐</div>
+          <div class="feature-name">Flexible Batches</div>
+          <p class="feature-text">Morning, afternoon, and evening batches designed to suit students and working professionals.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.35s">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-name">Placement Support</div>
+          <p class="feature-text">Career guidance, interview preparation, and job placement assistance after course completion.</p>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay:0.4s">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-name">Safe Environment</div>
+          <p class="feature-text">CCTV-monitored campus with a secure, disciplined atmosphere for focused learning.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center; margin-bottom:0">
+      <span class="section-tag">Student Reviews</span>
+      <h2 class="section-title">What Our <em>Students Say</em></h2>
+    </div>
+    <div class="testimonials-grid">
+
+      <div class="tcard reveal" style="transition-delay:0.05s">
+        <div class="tcard-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="tcard-text">Shraddha Institute changed my life! The ADCA course gave me the confidence to apply for government jobs. The faculty is extremely supportive and patient.</p>
+        <div class="tcard-author">
+          <div class="tcard-avatar">P</div>
+          <div>
+            <div class="tcard-name">Priya Sharma</div>
+            <div class="tcard-role">ADCA Graduate · Placed in Bank</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard reveal" style="transition-delay:0.1s">
+        <div class="tcard-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="tcard-text">The typing course was amazing. I went from 15 WPM to 55 WPM in just 3 months! The free internet facility helped me practice at the institute itself.</p>
+        <div class="tcard-author">
+          <div class="tcard-avatar" style="background:linear-gradient(135deg,#ffd166,#ff9f1c);">R</div>
+          <div>
+            <div class="tcard-name">Rahul Verma</div>
+            <div class="tcard-role">Typing Course · Data Entry Operator</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard reveal" style="transition-delay:0.15s">
+        <div class="tcard-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="tcard-text">I enrolled in the DOAP course knowing nothing about computers. Now I work as an office executive. The infrastructure and learning environment is top class!</p>
+        <div class="tcard-author">
+          <div class="tcard-avatar" style="background:linear-gradient(135deg,#06d6a0,#00b4d8);">A</div>
+          <div>
+            <div class="tcard-name">Anjali Patel</div>
+            <div class="tcard-role">DOAP Graduate · Office Executive</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION MAP -->
+<section id="location">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center">
+      <span class="section-tag">Find Us</span>
+      <h2 class="section-title">Visit Our <em>Institute</em></h2>
+      <p class="section-desc" style="margin:0 auto">We're located in Goriyabad, Amethi, Uttar Pradesh. Come visit us — walk-ins welcome!</p>
+    </div>
+    <div class="map-wrapper reveal">
+      <iframe
+        src="https://maps.google.com/maps?q=Goriyabad,+Amethi,+Uttar+Pradesh+227809&output=embed&z=14"
+        allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Shraddha Computer Institute Location">
+      </iframe>
+      <div class="map-address">
+        <div class="map-address-icon">📍</div>
+        <div class="map-address-text">
+          <strong>Shraddha Computer Institute</strong>
+          Goriyabad, Amethi, Uttar Pradesh — 227809
+        </div>
+        <a class="map-directions"
+           href="https://www.google.com/maps/dir/?api=1&destination=Goriyabad,+Amethi,+Uttar+Pradesh+227809"
+           target="_blank" rel="noopener">
+          🗺️ Get Directions
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-layout">
+      <div>
+        <div class="reveal">
+          <span class="section-tag">Get In Touch</span>
+          <h2 class="section-title">Ready to <em>Start Learning?</em></h2>
+          <p class="section-desc">Reach out to us — our team is ready to guide you through courses, fees, and schedules. Walk in or call us today!</p>
+        </div>
+        <div class="contact-cards">
+          <a class="contact-card reveal" href="tel:+919517334619" style="transition-delay:0.05s">
+            <div class="contact-card-icon">📞</div>
+            <div>
+              <div class="contact-card-label">Call Us</div>
+              <div class="contact-card-value">95173 34619</div>
+            </div>
+          </a>
+          <a class="contact-card reveal" href="tel:+918957736916" style="transition-delay:0.1s">
+            <div class="contact-card-icon">📱</div>
+            <div>
+              <div class="contact-card-label">Alternate Number</div>
+              <div class="contact-card-value">+91 89577 36916</div>
+            </div>
+          </a>
+          <div class="contact-card reveal" style="transition-delay:0.15s">
+            <div class="contact-card-icon">🕐</div>
+            <div>
+              <div class="contact-card-label">Working Hours</div>
+              <div class="contact-card-value">Mon–Sat: 8 AM – 8 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="reveal" style="margin-bottom:0.5rem">
+          <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem">Send Us a Message</h3>
+          <p style="color:var(--muted);font-size:0.85rem;margin-top:0.3rem">We'll call you back within 24 hours</p>
+        </div>
+        <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" placeholder="Rahul Kumar" required/>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" placeholder="+91 98765 43210" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Interested In</label>
+            <select>
+              <option value="">— Select a Course —</option>
+              <option>DOAP – Diploma in Office Automation</option>
+              <option>ADCA – Advanced Diploma</option>
+              <option>English Typing</option>
+              <option>Hindi Typing</option>
+              <option>OSINT Course</option>
+              <option>Computer Basics</option>
+              <option>Tally & Accounts</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message (Optional)</label>
+            <textarea placeholder="Tell us anything — batch preference, questions, etc."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;text-align:center;border:none;font-size:1rem;padding:1rem;">
+            Send via WhatsApp 💬
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Floating WhatsApp Button -->
+<div class="whatsapp-float">
+  <span class="whatsapp-tooltip">💬 Chat with us on WhatsApp</span>
+  <a class="whatsapp-btn" href="https://wa.me/919517334619?text=Hello%2C%20I%20want%20to%20know%20more%20about%20your%20courses." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.832 6.502L4 29l7.695-1.813A11.94 11.94 0 0016 27c6.627 0 12-5.373 12-12S22.627 3 16 3z" fill="#fff"/>
+      <path d="M21.5 18.5c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.19-.24-.57-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.86 1.21 3.06c.15.2 2.08 3.17 5.04 4.45.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.75-.71 2-1.4.25-.69.25-1.28.17-1.4-.07-.12-.27-.2-.57-.35z" fill="#25d366"/>
+    </svg>
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">💻 Shraddha Computer Institute</div>
+      <div class="footer-tagline">Empowering Digital India, One Student at a Time</div>
+    </div>
+    <div class="footer-links">
+      <a href="#courses">Courses</a>
+      <a href="#why">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:0.82rem;color:var(--muted)">Call Now:</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--cyan)">95173 34619</div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 Shraddha Computer Institute. All rights reserved. &nbsp;·&nbsp; Crafted with ❤️ for our students.
+  </div>
+</footer>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+// ── Canvas Particle System ──
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initParticles(); });
+
+function initParticles() {
+  particles = [];
+  const count = Math.floor((W * H) / 18000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r: Math.random() * 1.5 + 0.4,
+      alpha: Math.random() * 0.5 + 0.1,
+    });
+  }
+}
+initParticles();
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,229,255,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // connect nearby
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,229,255,${0.07 * (1 - dist/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ── Custom Cursor ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+
+(function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animateRing);
+})();
+
+document.querySelectorAll('a, button, .course-card, .feature-card, .tcard, .contact-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '18px'; cursor.style.height = '18px';
+    ring.style.borderColor = 'var(--gold)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px'; cursor.style.height = '12px';
+    ring.style.borderColor = 'var(--cyan)';
+  });
+});
+
+// ── Scroll Reveal ──
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── Counter Animation ──
+const counters = document.querySelectorAll('.counter');
+const counterObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(e.target);
+      counterObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObs.observe(c));
+
+function animateCounter(el) {
+  const target = +el.dataset.target;
+  let current = 0;
+  const step = target / 60;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.round(current) + (el.dataset.target >= 98 ? '%' : '+');
+  }, 24);
+}
+
+// ── Navbar scroll effect ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    navbar.style.background = 'rgba(5,13,26,0.95)';
+  } else {
+    navbar.style.background = 'rgba(5,13,26,0.7)';
+  }
+});
+
+// ── Form Submit → WhatsApp ──
+function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const name    = form.querySelector('input[type=text]').value.trim();
+  const phone   = form.querySelector('input[type=tel]').value.trim();
+  const course  = form.querySelector('select').value || 'Not specified';
+  const message = form.querySelector('textarea').value.trim() || 'No additional message';
+
+  const text = `🎓 *New Enquiry – Shraddha Computer Institute*
+
+👤 *Name:* ${name}
+📱 *Phone:* ${phone}
+📚 *Course Interested In:* ${course}
+💬 *Message:* ${message}
+
+_(Sent via website enquiry form)_`;
+
+  const encoded = encodeURIComponent(text);
+  const whatsappURL = `https://wa.me/919517334619?text=${encoded}`;
+
+  // This works even from local file:// — navigates to WhatsApp directly
+  window.location.href = whatsappURL;
+}
+</script>
+</body>
+</html>
